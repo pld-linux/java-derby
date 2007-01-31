@@ -1,0 +1,28 @@
+--- java/engine/org/apache/derby/impl/jdbc/EmbedPreparedStatement20.java.sav	2004-11-30 20:24:14.000000000 +0100
++++ java/engine/org/apache/derby/impl/jdbc/EmbedPreparedStatement20.java	2005-02-09 16:31:08.411796960 +0100
+@@ -30,6 +30,7 @@
+ 
+ import java.io.InputStream;
+ 
++import java.sql.ParameterMetaData;
+ import java.sql.SQLException;
+ import java.sql.SQLWarning;
+ import java.sql.Date;
+@@ -157,5 +158,17 @@
+     public void setArray (int i, Array x) throws SQLException {
+ 		throw Util.notImplemented();
+ 	}
++
++    /**
++     * JDBC 3.0
++     */
++        public ParameterMetaData getParameterMetaData()
++    throws SQLException
++        {
++          checkStatus();
++          return new EmbedParameterMetaData30(
++                                getParms(), preparedStatement.getParameterTypes());
++        }
++
+ }
+ 

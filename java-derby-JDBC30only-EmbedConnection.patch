@@ -1,0 +1,137 @@
+--- java/engine/org/apache/derby/impl/jdbc/EmbedConnection.java.sav	2005-06-10 05:38:48.000000000 +0200
++++ java/engine/org/apache/derby/impl/jdbc/EmbedConnection.java	2006-09-07 10:37:58.000000000 +0200
+@@ -39,6 +39,7 @@
+ import org.apache.derby.iapi.error.StandardException;
+ import org.apache.derby.iapi.services.i18n.MessageService;
+ import org.apache.derby.iapi.sql.conn.LanguageConnectionContext;
++import org.apache.derby.iapi.sql.conn.StatementContext;
+ import org.apache.derby.iapi.sql.execute.ExecutionContext;
+ import org.apache.derby.iapi.sql.dictionary.DataDictionary;
+ import org.apache.derby.iapi.store.access.XATransactionController;
+@@ -50,6 +51,7 @@
+ import java.sql.PreparedStatement;
+ import java.sql.CallableStatement;
+ import java.sql.DatabaseMetaData;
++import java.sql.Savepoint;
+ import java.sql.SQLException;
+ import java.sql.SQLWarning;
+ import java.sql.Statement;
+@@ -1943,4 +1945,118 @@
+     }
+ 
+ 
++
++        /**
++         * Creates a savepoint with the given name(if it is a named savepoint else we will generate a name
++         * becuase Cloudscape only supports named savepoints internally) in the current transaction and
++         * returns the new Savepoint object that represents it.
++         *
++         * @param name  A String containing the name of the savepoint. Will be null if this is an unnamed savepoint
++         * @param userSuppliedSavepointName  If true means it's a named user defined savepoint.
++         *
++         * @return  The new Savepoint object
++         */
++        private Savepoint commonSetSavepointCode(String name, boolean userSuppliedSavepointName) throws SQLException
++        {
++                synchronized (getConnectionSynchronization()) {
++                        setupContextStack();
++                        try {
++                                verifySavepointCommandIsAllowed();
++                                if (userSuppliedSavepointName && (name == null))//make sure that if it is a named savepoint then supplied name is not null
++                                        throw newSQLException(SQLState.NULL_NAME_FOR_SAVEPOINT);
++                                //make sure that if it is a named savepoint then supplied name length is not > 128
++                                if (userSuppliedSavepointName && name.startsWith("SYS")) //to enforce DB2 restriction which is savepoint name can't start with SYS
++                                        throw newSQLException(SQLState.INVALID_SCHEMA_SYS, "SYS");
++                                Savepoint savePt = new EmbedSavepoint30(this, name);
++                                return savePt;
++                        } catch (StandardException e) {
++                                throw handleException(e);
++                        } finally {
++                            restoreContextStack();
++                        }
++                }
++        }
++
++        // used by setSavepoint to check autocommit is false and not inside the trigger code
++        private void verifySavepointCommandIsAllowed() throws SQLException
++        {
++                if (autoCommit)
++                        throw newSQLException(SQLState.NO_SAVEPOINT_WHEN_AUTO);
++
++                //Bug 4507 - savepoint not allowed inside trigger
++                StatementContext stmtCtxt = getLanguageConnection().getStatementContext();
++                if (stmtCtxt!= null && stmtCtxt.inTrigger())
++                        throw newSQLException(SQLState.NO_SAVEPOINT_IN_TRIGGER);
++        }
++
++        // used by release/rollback to check savepoint argument
++        private void verifySavepointArg(Savepoint savepoint) throws SQLException
++        {
++                //bug 4451 - Check for null savepoint
++                EmbedSavepoint30 lsv = (EmbedSavepoint30) savepoint;
++            // bug 4451 need to throw error for null Savepoint
++            if (lsv == null)
++                throw
++                    Util.generateCsSQLException(SQLState.XACT_SAVEPOINT_NOT_FOUND, "null");
++
++                //bug 4468 - verify that savepoint rollback is for a savepoint from the current
++                // connection
++                if (!lsv.sameConnection(this))
++                        throw newSQLException(SQLState.XACT_SAVEPOINT_RELEASE_ROLLBACK_FAIL);
++
++                return;
++        }
++
++        public Savepoint setSavepoint()
++                throws SQLException
++        {
++                return commonSetSavepointCode(null, false);
++        }
++
++        public Savepoint setSavepoint(
++                        String name)
++                throws SQLException
++        {
++                return commonSetSavepointCode(name, true);
++        }
++
++        public void rollback(
++                        Savepoint savepoint)
++                throws SQLException
++        {
++                synchronized (getConnectionSynchronization()) {
++                        setupContextStack();
++                        try {
++                                verifySavepointCommandIsAllowed();
++                                verifySavepointArg(savepoint);
++                                //Need to cast and get the name because JDBC3 spec doesn't support names for
++                                //unnamed savepoints but Cloudscape keeps names for named & unnamed savepoints.
++                                getLanguageConnection().internalRollbackToSavepoint(((EmbedSavepoint30)savepoint).getInternalName(),true, savepoint);
++                        } catch (StandardException e) {
++                                throw handleException(e);
++                        } finally {
++                            restoreContextStack();
++                        }
++                }
++        }
++
++        public void releaseSavepoint(
++                        Savepoint savepoint)
++                throws SQLException
++        {
++                synchronized (getConnectionSynchronization()) {
++                        setupContextStack();
++                        try {
++                                verifySavepointCommandIsAllowed();
++                                verifySavepointArg(savepoint);
++                                //Need to cast and get the name because JDBC3 spec doesn't support names for
++                                //unnamed savepoints but Cloudscape keeps name for named & unnamed savepoints.
++                                getLanguageConnection().releaseSavePoint(((EmbedSavepoint30)savepoint).getInternalName(), savepoint);
++                        } catch (StandardException e) {
++                                throw handleException(e);
++                        } finally {
++                            restoreContextStack();
++                        }
++                }
++        }
+ }
