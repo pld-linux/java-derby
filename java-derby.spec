@@ -30,7 +30,7 @@ BuildRequires:	jpackage-utils >= 0:1.5
 BuildRequires:	jta
 BuildRequires:	rpmbuild(macros) >= 1.300
 BuildRequires:	servletapi5
-BuildRequires:	xalan-j2
+BuildRequires:	xalan-j
 BuildRequires:	xerces-j
 BuildRequires:	xml-commons-apis
 Requires:	java >= 0:1.4.2
@@ -105,6 +105,7 @@ done
 %patch8
 %patch9
 
+%build
 cd tools/java
 ln -sf $(build-classpath javacc) .
 ln -sf $(build-classpath jta) .
@@ -114,8 +115,8 @@ ln -sf $(build-classpath oro) .
 ln -sf $(build-classpath xalan-j2) .
 ln -sf $(build-classpath xerces-j2) .
 ln -sf $(build-classpath xml-commons-apis) .
+cd -
 
-%build
 export OPT_JAR_LIST="ant/ant-nodeps"
 
 # set both jres to 1.4.2 !!
