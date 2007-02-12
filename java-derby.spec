@@ -3,12 +3,12 @@
 %bcond_without	tests	# do not perform tests
 #
 Summary:	Derby DB (ex Cloudscape)
+Summary(pl.UTF-8):	Derby DB (dawniej Cloudscape)
 Name:		derby
 Version:	10.1.1.0
 Release:	0.1
 License:	Apache License Version 2.0
 Group:		Applications/Databases
-URL:		http://db.apache.org/derby/
 Source0:	http://www.apache.org/dist/db/derby/db-derby-10.1.1.0/db-%{name}-%{version}-src.tar.gz
 # Source0-md5:	122cbf34bf8e637802255baed5cc10ed
 Source1:	%{name}-%{version}-test.script
@@ -22,6 +22,7 @@ Patch6:		%{name}-10.1.1.0-JDBC30only-BrokeredConnection30.patch
 Patch7:		%{name}-10.1.1.0-JDBC30only-EmbedConnection.patch
 Patch8:		%{name}-10.1.1.0-JDBC30only-EmbedCallableStatement20.patch
 Patch9:		%{name}-10.1.1.0-JDBC30only-EmbedPreparedStatement20.patch
+URL:		http://db.apache.org/derby/
 BuildRequires:	ant >= 0:1.6
 BuildRequires:	jakarta-oro
 BuildRequires:	javacc
@@ -58,34 +59,67 @@ The network server allows the Derby engine to support networked JDBC,
 ODBC/CLI, Perl and PHP.
 
 Database Utilities:
-- ij - -- a tool that allows SQL scripts to be executed against any
-  JDBC database.
-- dblook -- Schema extraction tool for a Derby database.
-- sysinfo -- Utility to display version numbers and class path.
+- ij - a tool that allows SQL scripts to be executed against any JDBC
+  database.
+- dblook - Schema extraction tool for a Derby database.
+- sysinfo - Utility to display version numbers and class path.
+
+%description -l pl.UTF-8
+Projekt Derby rozwija technologię bazodanową o otwartych źródłach
+będącą: w czystej Javie, łatwą w użyciu, o niewielkich rozmiarach,
+opartą na standardach, bezpieczną. Podstawa tej technologii, silnik
+bazodanowy Derby.s, jest w pełni funkcjonalnym osadzalnym silnikiem
+relacyjnych baz danych. API programistyczne to JDBC i SQL. Serwer
+sieciowy Derby zwiększa zasięg silnika bazodanowego Derby
+udostępniając tradycyjną funkcjonalność klient-serwer. Serwer sieciowy
+pozwala klientom na łączenie się po TCP/IP przy użyciu standardowego
+protokołu DRDA.
+
+Serwer sieciowy pozwala silnikowi Derby obsługiwać sieciowe JDBC,
+ODBC/CLI, Perla i PHP.
+
+Narzędzia bazodanowe:
+- ij - narzędzie pozwalające na wykonywanie skryptów SQL na dowolnej
+  bazie JDBC
+- dblook - narzędzie do wyciągania schematów dla bazy danych Derby
+- sysinfo - narzędzie do wyświetlania numerów wersji i ścieżek klas
 
 
 %package javadoc
-Summary:	Javadoc for %{name}
+Summary:	Javadoc for Derby DB
+Summary(pl.UTF-8):	Dokumentacja javadoc do Derby DB
 Group:		Documentation
-Requires(post):	/bin/rm,/bin/ln
+Requires(post):	/bin/rm
+Requires(post):	/bin/ln
 Requires(postun):	/bin/rm
 
 %description javadoc
-Javadoc for %{name}
+Javadoc for Derby DB.
+
+%description javadoc -l pl.UTF-8
+Dokumentacja javadoc do Derby DB.
 
 %package manual
-Summary:	Documents for %{name}
+Summary:	Documents for Derby DB
+Summary(pl.UTF-8):	Dokumenty do Derby DB
 Group:		Documentation
 
 %description manual
-Documents for %{name}
+Documents for Derby DB.
+
+%description manual -l pl.UTF-8
+Dokumenty do Derby DB.
 
 %package demo
-Summary:	Examples for %{name}
+Summary:	Examples for Derby DB
+Summary(pl.UTF-8):	Przykłady do Derby DB
 Group:		Documentation
 
 %description demo
-Examples for %{name}
+Examples for Derby DB.
+
+%description demo -l pl.UTF-8
+Przykłady do Derby DB.
 
 %prep
 %setup -q -n db-%{name}-%{version}-src
@@ -217,4 +251,4 @@ fi
 
 %files manual
 %defattr(644,root,root,755)
-%doc %{_docdir}/%{name}
+%{_docdir}/%{name}
