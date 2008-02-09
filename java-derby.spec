@@ -7,7 +7,7 @@ Summary(pl.UTF-8):	Derby DB (dawniej Cloudscape)
 Name:		derby
 Version:	10.1.1.0
 Release:	0.1
-License:	Apache License Version 2.0
+License:	Apache v2.0
 Group:		Applications/Databases
 Source0:	http://www.apache.org/dist/db/derby/db-derby-10.1.1.0/db-%{name}-%{version}-src.tar.gz
 # Source0-md5:	122cbf34bf8e637802255baed5cc10ed
