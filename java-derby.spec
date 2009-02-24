@@ -4,42 +4,42 @@
 #
 Summary:	Derby DB (ex Cloudscape)
 Summary(pl.UTF-8):	Derby DB (dawniej Cloudscape)
-Name:		derby
+Name:		java-derby
 Version:	10.1.1.0
 Release:	0.1
 License:	Apache v2.0
 Group:		Applications/Databases
-Source0:	http://www.apache.org/dist/db/derby/db-derby-10.1.1.0/db-%{name}-%{version}-src.tar.gz
+Source0:	http://www.apache.org/dist/db/derby/db-derby-%{version}/db-derby-%{version}-src.tar.gz
 # Source0-md5:	122cbf34bf8e637802255baed5cc10ed
-Source1:	%{name}-%{version}-test.script
-Patch0:		%{name}-10.1.1.0-compilepath_properties.patch
-Patch1:		%{name}-10.1.1.0-extrapath_properties.patch
-Patch2:		%{name}-10.1.1.0-JDBC30only-BrokeredConnection.patch
-Patch3:		%{name}-10.1.1.0-JDBC30only-BrokeredCallableStatement.patch
-Patch4:		%{name}-10.1.1.0-JDBC30only-BrokeredPreparedStatement.patch
-Patch5:		%{name}-10.1.1.0-JDBC30only-BrokeredCallableStatement30.patch
-Patch6:		%{name}-10.1.1.0-JDBC30only-BrokeredConnection30.patch
-Patch7:		%{name}-10.1.1.0-JDBC30only-EmbedConnection.patch
-Patch8:		%{name}-10.1.1.0-JDBC30only-EmbedCallableStatement20.patch
-Patch9:		%{name}-10.1.1.0-JDBC30only-EmbedPreparedStatement20.patch
+Source1:	%{name}-test.script
+Patch0:		%{name}-compilepath_properties.patch
+Patch1:		%{name}-extrapath_properties.patch
+Patch2:		%{name}-JDBC30only-BrokeredConnection.patch
+Patch3:		%{name}-JDBC30only-BrokeredCallableStatement.patch
+Patch4:		%{name}-JDBC30only-BrokeredPreparedStatement.patch
+Patch5:		%{name}-JDBC30only-BrokeredCallableStatement30.patch
+Patch6:		%{name}-JDBC30only-BrokeredConnection30.patch
+Patch7:		%{name}-JDBC30only-EmbedConnection.patch
+Patch8:		%{name}-JDBC30only-EmbedCallableStatement20.patch
+Patch9:		%{name}-JDBC30only-EmbedPreparedStatement20.patch
 URL:		http://db.apache.org/derby/
-BuildRequires:	ant >= 0:1.6
+BuildRequires:	ant >= 1.6
 BuildRequires:	jakarta-oro
+BuildRequires:	java-servletapi5
 BuildRequires:	javacc
 BuildRequires:	jdk >= 0:1.4.2
 BuildRequires:	jpackage-utils >= 0:1.5
 BuildRequires:	jta
 BuildRequires:	rpmbuild(macros) >= 1.300
-BuildRequires:	servletapi5
 BuildRequires:	xalan-j
 BuildRequires:	xerces-j
 BuildRequires:	xml-commons-apis
-Requires:	java >= 0:1.4.2
+Requires:	jakarta-oro
+Requires:	java >= 1.4.2
+Requires:	java-servletapi5
 Requires:	jta
-Requires:	oro
-Requires:	servletapi5
-Requires:	xalan-j2
-Requires:	xerces-j2
+Requires:	xalan-j
+Requires:	xerces-j
 Requires:	xml-commons-apis
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -89,9 +89,7 @@ Narzędzia bazodanowe:
 Summary:	Javadoc for Derby DB
 Summary(pl.UTF-8):	Dokumentacja javadoc do Derby DB
 Group:		Documentation
-Requires(post):	/bin/rm
-Requires(post):	/bin/ln
-Requires(postun):	/bin/rm
+Requires:	jpackage-utils
 
 %description javadoc
 Javadoc for Derby DB.
@@ -122,9 +120,8 @@ Examples for Derby DB.
 Przykłady do Derby DB.
 
 %prep
-%setup -q -n db-%{name}-%{version}-src
-
-for j in $(find . -name "*.jar"); do
+%setup -q -n db-derby-%{version}-src
+for j in $(find -name '*.jar'); do
 	mv $j $j.no
 done
 
@@ -140,32 +137,24 @@ done
 %patch9
 
 %build
-cd tools/java
-ln -sf $(build-classpath javacc) .
-ln -sf $(build-classpath jta) .
-ln -sf $(build-classpath jce) .
-ln -sf $(build-classpath servletapi5) .
-ln -sf $(build-classpath oro) .
-ln -sf $(build-classpath xalan-j2) .
-ln -sf $(build-classpath xerces-j2) .
-ln -sf $(build-classpath xml-commons-apis) .
-cd -
+required_jars="javacc jta jce servletapi5 oro xalan xerces-j2 xml-commons-apis"
+
+CLASSPATH=$(build-classpath $required_jars)
+export CLASSPATH
 
 export OPT_JAR_LIST="ant/ant-nodeps"
 
-# set both jres to 1.4.2 !!
 %ant \
-	-Dj13lib=/usr/lib/jvm/java-1.4.2/jre/lib \
-	-Dj14lib=/usr/lib/jvm/java-1.4.2/jre/lib \
+	-Dj13lib=$JAVA_HOME/jre/lib \
+	-Dj14lib=$JAVA_HOME/jre/lib \
 	buildsource testing buildjarsclean javadoc
 
 %if %{with tests}
 mkdir testdir
-cp %{SOURCE1} testdir/testderby.sh
+install %{SOURCE1} testdir/testderby.sh
 cd testdir
-chmod +x testderby.sh
 ./testderby.sh
-for f in $(find . -name "*.fail"); do
+for f in $(find -name '*.fail'); do
 	echo FAILED $f
 	cat $f
 done
@@ -231,13 +220,7 @@ cp -pr javadoc/tools $RPM_BUILD_ROOT%{_docdir}/%{name}
 rm -rf $RPM_BUILD_ROOT
 
 %post javadoc
-rm -f %{_javadocdir}/%{name}
-ln -s %{name}-%{version} %{_javadocdir}/%{name}
-
-%postun javadoc
-if [ "$1" = "0" ]; then
-	rm -f %{_javadocdir}/%{name}
-fi
+ln -nfs %{name}-%{version} %{_javadocdir}/%{name}
 
 %files
 %defattr(644,root,root,755)
@@ -246,8 +229,8 @@ fi
 
 %files javadoc
 %defattr(644,root,root,755)
-%doc %{_javadocdir}/%{name}-%{version}
-%ghost %doc %{_javadocdir}/%{name}
+%{_javadocdir}/%{name}-%{version}
+%ghost %{_javadocdir}/%{name}
 
 %files manual
 %defattr(644,root,root,755)
