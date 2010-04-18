@@ -24,23 +24,23 @@ Patch8:		%{name}-JDBC30only-EmbedCallableStatement20.patch
 Patch9:		%{name}-JDBC30only-EmbedPreparedStatement20.patch
 URL:		http://db.apache.org/derby/
 BuildRequires:	ant >= 1.6
-BuildRequires:	jakarta-oro
+BuildRequires:	java(jta)
+BuildRequires:	java-oro
 BuildRequires:	java-servletapi5
+BuildRequires:	java-xalan
+BuildRequires:	java-xerces
+BuildRequires:	java-xml-commons-apis
 BuildRequires:	javacc
 BuildRequires:	jdk >= 0:1.4.2
 BuildRequires:	jpackage-utils >= 0:1.5
-BuildRequires:	jta
 BuildRequires:	rpmbuild(macros) >= 1.300
-BuildRequires:	xalan-j
-BuildRequires:	xerces-j
-BuildRequires:	xml-commons-apis
-Requires:	jakarta-oro
 Requires:	java >= 1.4.2
+Requires:	java(jta)
+Requires:	java-oro
 Requires:	java-servletapi5
-Requires:	jta
-Requires:	xalan-j
-Requires:	xerces-j
-Requires:	xml-commons-apis
+Requires:	java-xalan
+Requires:	java-xerces
+Requires:	java-xml-commons-apis
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
