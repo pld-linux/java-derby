@@ -1,7 +1,0 @@
-#!/bin/sh
-LIB=../jars/sane
-TLIB=../tools/java
-export CLASSPATH=$LIB/derby.jar:$LIB/derbyLocale_de_DE.jar:$LIB/derbyLocale_es.jar:$LIB/derbyLocale_fr.jar:$LIB/derbyLocale_it.jar:$LIB/derbyLocale_ja_JP.jar:$LIB/derbyLocale_ko_KR.jar:$LIB/derbyLocale_pt_BR.jar:$LIB/derbyLocale_zh_CN.jar:$LIB/derbyLocale_zh_TW.jar:$LIB/derbynet.jar:$LIB/derbyTesting.jar:$LIB/derbytools.jar:$LIB/derbyclient.jar:$TLIB/oro.jar
-
-java -Dverbose=true \
-	org.apache.derbyTesting.functionTests.harness.RunSuite derbyall

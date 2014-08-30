@@ -1,0 +1,13 @@
+# https://bugzilla.redhat.com/show_bug.cgi?id=830661
+--- build.xml.orig	2014-06-09 15:00:32.294671997 +0100
++++ build.xml	2014-06-09 14:59:42.345476893 +0100
+@@ -1737,6 +1737,9 @@
+     	 manifest="${derby.jar.dir}/lists/smfnet.mf">
+       <fileset dir="${out.dir}"
+                includes="org/apache/derby/loc/drda/**,
++                         org/apache/derby/drda/**,
++                         org/apache/derby/mbeans/drda/**,
++                         org/apache/derby/impl/drda/**,
+                          org/apache/derby/loc/sysinfoMessages.properties,
+                          org/apache/derby/info/net.properties,
+                          org/apache/derby/drda/server.policy"/>
