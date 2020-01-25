@@ -4,7 +4,6 @@
 %bcond_without	javadoc		# don't build javadoc
 
 %define		srcname	derby
-%include	/usr/lib/rpm/macros.java
 Summary:	Derby DB (ex Cloudscape)
 Summary(pl.UTF-8):	Derby DB (dawniej Cloudscape)
 Name:		java-%{srcname}
