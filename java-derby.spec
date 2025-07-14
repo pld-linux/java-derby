@@ -119,8 +119,8 @@ done
 %undos -f jj,xml
 
 rm java/engine/org/apache/derby/impl/sql/compile/Token.java
-%patch1 -p0
-%patch2 -p0
+%patch -P1 -p0
+%patch -P2 -p0
 
 # Using generics
 find -name build.xml | xargs sed -i -e '
