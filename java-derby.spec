@@ -22,7 +22,7 @@ BuildRequires:	ant >= 1.6
 BuildRequires:	java-oro
 BuildRequires:	java-servletapi
 BuildRequires:	java-xalan
-#BuildRequires:	java-xerces
+BuildRequires:	java-xerces
 #BuildRequires:	java-xml-commons-apis
 BuildRequires:	javacc
 BuildRequires:	jdk >= 1.6
