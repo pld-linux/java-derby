@@ -8,7 +8,7 @@ Summary:	Derby DB (ex Cloudscape)
 Summary(pl.UTF-8):	Derby DB (dawniej Cloudscape)
 Name:		java-%{srcname}
 Version:	10.10.2.0
-Release:	0.1
+Release:	1
 License:	Apache v2.0
 Group:		Applications/Databases
 Source0:	http://www.apache.org/dist/db/derby/db-derby-%{version}/db-derby-%{version}-src.tar.gz
@@ -29,6 +29,8 @@ BuildRequires:	jdk >= 1.6
 BuildRequires:	jpackage-utils >= 1.5
 BuildRequires:	rpm-javaprov
 BuildRequires:	rpmbuild(macros) >= 1.553
+Provides:	group(derby)
+Provides:	user(derby)
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
